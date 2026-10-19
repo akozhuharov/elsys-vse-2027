@@ -63,3 +63,119 @@ for i in names:
         continue
     print(i)
 ```
+
+<!-- ПРИМЕРИ:НАЧАЛО (генерирано от tools/sync_examples.py - не редактирай ръчно) -->
+
+## Примерни програми
+
+Кодът е в [`examples/02-lists-and-for-loop/`](./examples/02-lists-and-for-loop/) — пусни го с `python3 examples/02-lists-and-for-loop/<име>.py`.
+Виж го ред по ред, с променливите и изхода на всяка стъпка, във [визуализатора](./visualizer.html).
+
+### 1. Статистика за оценки
+*обхождане на списък с for*
+
+```python
+# Статистика за оценки - обхождане на списък с for
+grades = [4, 6, 3, 5, 6, 2]
+print("Оценки:", grades)
+
+total = 0
+best = grades[0]      # приемаме първия елемент за най-голям
+
+for grade in grades:
+    total += grade
+    if grade > best:
+        best = grade
+
+average = total / len(grades)   # len() връща броя елементи
+print("Сума:", total)
+print("Средно:", average)
+print("Най-висока:", best)
+```
+
+Изход:
+```
+Оценки: [4, 6, 3, 5, 6, 2]
+Сума: 26
+Средно: 4.333333333333333
+Най-висока: 6
+```
+
+### 2. range със стъпка и continue
+*квадрати на числата*
+
+```python
+# range със стъпка и continue - квадрати на числата
+squares = []
+
+for i in range(1, 11):          # числата от 1 до 10
+    if i % 2 != 0:
+        continue                # нечетните се прескачат
+    squares.append(i * i)       # append добавя в края на списъка
+
+print("Квадрати на четните:", squares)
+
+# range с три аргумента: начало, край, стъпка
+for i in range(0, 25, 5):
+    print("Стъпка 5:", i)
+
+print("Обратно с отрицателна стъпка:")
+for i in range(3, 0, -1):
+    print(i)
+```
+
+Изход:
+```
+Квадрати на четните: [4, 16, 36, 64, 100]
+Стъпка 5: 0
+Стъпка 5: 5
+Стъпка 5: 10
+Стъпка 5: 15
+Стъпка 5: 20
+Обратно с отрицателна стъпка:
+3
+2
+1
+```
+
+### 3. Присъствия
+*добавяне, премахване и търсене с break*
+
+```python
+# Присъствия - добавяне, премахване и търсене с break
+present = ["Petar", "Ivan", "Ogi", "Nasko"]
+
+present.append("Boyan")       # идва още един ученик
+print("След append:", present)
+
+present.remove("Ogi")         # премахване по стойност
+print("След remove:", present)
+
+first = present.pop(0)        # pop по индекс - връща премахнатия елемент
+print("Излезе:", first, "->", present)
+
+searched = "Nasko"
+found_at = -1
+
+for index in range(len(present)):
+    print("Проверявам индекс", index)
+    if present[index] == searched:
+        found_at = index
+        break                 # намерихме го, няма смисъл да търсим нататък
+
+print(searched, "е на позиция", found_at)
+print("Последният в списъка е", present[-1])
+```
+
+Изход:
+```
+След append: ['Petar', 'Ivan', 'Ogi', 'Nasko', 'Boyan']
+След remove: ['Petar', 'Ivan', 'Nasko', 'Boyan']
+Излезе: Petar -> ['Ivan', 'Nasko', 'Boyan']
+Проверявам индекс 0
+Проверявам индекс 1
+Nasko е на позиция 1
+Последният в списъка е Boyan
+```
+
+<!-- ПРИМЕРИ:КРАЙ -->

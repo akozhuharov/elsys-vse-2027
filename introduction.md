@@ -92,3 +92,111 @@ else:
     print("x е по-малко от 5")
 ```
 В този пример програмата ще отпечата "x е по-голямо от 5", тъй като условието x > 5 е вярно.
+
+<!-- ПРИМЕРИ:НАЧАЛО (генерирано от tools/sync_examples.py - не редактирай ръчно) -->
+
+## Примерни програми
+
+Кодът е в [`examples/01-introduction/`](./examples/01-introduction/) — пусни го с `python3 examples/01-introduction/<име>.py`.
+Виж го ред по ред, с променливите и изхода на всяка стъпка, във [визуализатора](./visualizer.html).
+
+### 1. Съветник за облекло
+*типове данни, математика и if/elif/else*
+
+```python
+# Съветник за облекло - типове данни, математика и if/elif/else
+temperature = 12.5          # float - температура в градуси
+is_raining = True           # bool - дали вали
+city = "Sofia"              # str - име на града
+
+feels_like = temperature - 3     # вятърът "отнема" 3 градуса
+print(city, "- усеща се като", feels_like)
+
+if feels_like < 0:
+    print("Зимно яке и шапка")
+elif feels_like < 15:
+    print("Яке")
+else:
+    print("Тениска")
+
+if is_raining:
+    print("Вземи чадър!")
+```
+
+Изход:
+```
+Sofia - усеща се като 9.5
+Яке
+Вземи чадър!
+```
+
+### 2. Калкулатор на оценка
+*деление, остатък и преобразуване на типове*
+
+```python
+# Калкулатор на оценка - деление, остатък и преобразуване на типове
+points = 47        # int - получени точки
+maximum = 60       # int - максимални точки
+
+percent = points / maximum * 100   # / винаги дава float
+print("Процент:", percent)
+
+rounded = int(percent)             # int() отрязва дробната част
+print("Закръглено надолу:", rounded)
+
+if rounded >= 90:
+    grade = 6
+elif rounded >= 75:
+    grade = 5
+elif rounded >= 60:
+    grade = 4
+elif rounded >= 50:
+    grade = 3
+else:
+    grade = 2
+
+print("Оценка:", grade)
+print("Точки до отличен:", maximum * 90 // 100 - points)
+```
+
+Изход:
+```
+Процент: 78.33333333333333
+Закръглено надолу: 78
+Оценка: 5
+Точки до отличен: 7
+```
+
+### 3. Високосна година
+*логически операции and / or / not*
+
+```python
+# Високосна година - логически операции and / or / not
+year = 2024
+
+divisible_by_4 = year % 4 == 0        # % дава остатък, == сравнява
+divisible_by_100 = year % 100 == 0
+divisible_by_400 = year % 400 == 0
+
+print(divisible_by_4, divisible_by_100, divisible_by_400)
+
+# Високосна е, ако се дели на 4 и НЕ се дели на 100, ИЛИ се дели на 400
+is_leap = (divisible_by_4 and not divisible_by_100) or divisible_by_400
+print("Високосна:", is_leap)
+
+if is_leap:
+    days = 366
+else:
+    days = 365
+
+print(year, "има", days, "дни")
+```
+
+Изход:
+```
+True False False
+Високосна: True
+2024 има 366 дни
+```
+
+<!-- ПРИМЕРИ:КРАЙ -->

@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="bg" class="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Python стъпка по стъпка</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { darkMode: 'class' };
+</script>
+<style>
+  :root { color-scheme: dark; }
+  body { background: #0b1020; }
+  .code-line { display: grid; grid-template-columns: 3.1rem 1fr; }
+  .tok-kw { color: #c792ea; }
+  .tok-str { color: #7ee787; }
+  .tok-num { color: #ffb86c; }
+  .tok-com { color: #5c6c86; font-style: italic; }
+  .tok-fn { color: #82aaff; }
+  .tok-bi { color: #4fd6be; }
+  .flash { animation: flash .6s ease-out; }
+  @keyframes flash { from { background: #fbbf2455; } to { background: transparent; } }
+  .scroll-thin::-webkit-scrollbar { width: 8px; height: 8px; }
+  .scroll-thin::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+</style>
+</head>
+<body class="text-slate-200 antialiased">
+<div class="max-w-[1700px] mx-auto px-4 py-5 overflow-x-hidden">
+
+  <header class="mb-5 flex flex-wrap items-end justify-between gap-3">
+    <div>
+      <h1 class="text-2xl font-bold text-white">Python стъпка по стъпка</h1>
+      <p class="text-sm text-slate-400">21 примерни програми от курса — виж какво прави всеки ред, как се променят променливите и какво излиза на екрана.</p>
+    </div>
+    <div class="text-xs text-slate-500">
+      <kbd class="px-1.5 py-0.5 bg-slate-800 rounded">→</kbd> напред ·
+      <kbd class="px-1.5 py-0.5 bg-slate-800 rounded">←</kbd> назад ·
+      <kbd class="px-1.5 py-0.5 bg-slate-800 rounded">space</kbd> пускане ·
+      <kbd class="px-1.5 py-0.5 bg-slate-800 rounded">R</kbd> от начало
+    </div>
+  </header>
+
+  <div class="grid gap-4 min-w-0 lg:grid-cols-[17rem_minmax(0,1fr)_23rem]">
+
+    <!-- списък с програми -->
+    <aside class="bg-slate-900/70 border border-slate-800 rounded-xl p-3 min-w-0 max-h-56 overflow-y-auto lg:max-h-[82vh] scroll-thin">
+      <nav id="menu" class="space-y-4 text-sm"></nav>
+    </aside>
+
+    <!-- код -->
+    <main class="min-w-0 space-y-3">
+      <div class="bg-slate-900/70 border border-slate-800 rounded-xl overflow-hidden min-w-0">
+        <div class="px-4 py-3 border-b border-slate-800 flex flex-wrap items-center gap-x-3 gap-y-1">
+          <h2 id="prog-title" class="font-semibold text-white"></h2>
+          <span id="prog-lesson" class="text-xs px-2 py-0.5 rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/30"></span>
+          <code id="prog-file" class="text-xs text-slate-500 ml-auto"></code>
+        </div>
+        <p id="prog-desc" class="px-4 pt-3 text-sm text-slate-400"></p>
+        <div id="code" class="p-4 pt-3 text-[13px] leading-6 font-mono overflow-auto scroll-thin max-h-[55vh]"></div>
+      </div>
+
+      <!-- управление -->
+      <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-3 min-w-0">
+        <div class="flex flex-wrap items-center gap-2">
+          <button id="btn-reset" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm" title="От начало (R)">⏮</button>
+          <button id="btn-prev"  class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm" title="Назад (←)">◀</button>
+          <button id="btn-play"  class="px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium w-28" title="Пускане (space)">▶ пусни</button>
+          <button id="btn-next"  class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm" title="Напред (→)">▶</button>
+          <button id="btn-end"   class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm" title="До края">⏭</button>
+          <span id="counter" class="ml-2 text-xs text-slate-400 tabular-nums"></span>
+          <label class="ml-auto text-xs text-slate-400 flex items-center gap-2">скорост
+            <input id="speed" type="range" min="1" max="10" value="5" class="w-20 accent-indigo-500">
+          </label>
+        </div>
+        <input id="slider" type="range" min="0" max="0" value="0" class="w-full mt-3 accent-indigo-500">
+        <div id="explain" class="mt-2 text-sm bg-slate-950/60 border border-slate-800 rounded-lg px-3 py-2 min-h-[3.5rem] break-words"></div>
+      </div>
+    </main>
+
+    <!-- състояние -->
+    <section class="space-y-3 min-w-0 lg:max-h-[82vh] lg:overflow-y-auto scroll-thin">
+      <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-3 min-w-0">
+        <h3 class="text-xs uppercase tracking-wide text-slate-500 mb-2">Променливи</h3>
+        <div id="vars" class="space-y-1 text-[13px] font-mono"></div>
+      </div>
+      <div id="stack-box" class="bg-slate-900/70 border border-slate-800 rounded-xl p-3 min-w-0 hidden">
+        <h3 class="text-xs uppercase tracking-wide text-slate-500 mb-2">Стек от извиквания</h3>
+        <div id="stack" class="space-y-1 text-[13px] font-mono break-all"></div>
+      </div>
+      <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-3 min-w-0">
+        <h3 class="text-xs uppercase tracking-wide text-slate-500 mb-2">Изход (print)</h3>
+        <pre id="stdout" class="text-[13px] font-mono whitespace-pre-wrap break-words text-emerald-300 min-h-[3rem]"></pre>
+      </div>
+      <div id="files-box" class="bg-slate-900/70 border border-slate-800 rounded-xl p-3 min-w-0 hidden">
+        <h3 class="text-xs uppercase tracking-wide text-slate-500 mb-2">Файлове в папката</h3>
+        <div id="files" class="space-y-2 text-[12px] font-mono"></div>
+      </div>
+    </section>
+  </div>
+
+  <footer class="mt-6 text-xs text-slate-600">
+    Стъпките са записани с истинско изпълнение на програмите (<code>tools/trace.py</code>, sys.settrace) — не са измислени.
+  </footer>
+</div>
+
+<script>
+const PROGRAMS = /*__DATA__*/[]/*__END__*/;
+
+/* ---------- Python подсветка ---------- */
+const KW = new Set(['False','None','True','and','as','assert','async','await','break','class','continue','def','del','elif','else','except','finally','for','from','global','if','import','in','is','lambda','nonlocal','not','or','pass','raise','return','try','while','with','yield','self','super']);
+const BI = new Set(['print','len','range','int','float','str','bool','list','dict','set','tuple','open','sum','min','max','abs','round','sorted','enumerate','zip','input','type','NotImplementedError']);
+
+function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(line) {
+  let out = '', i = 0;
+  while (i < line.length) {
+    const ch = line[i];
+    if (ch === '#') { out += '<span class="tok-com">' + esc(line.slice(i)) + '</span>'; break; }
+    if (ch === '"' || ch === "'") {
+      let j = i + 1;
+      while (j < line.length && line[j] !== ch) { if (line[j] === '\\') j++; j++; }
+      out += '<span class="tok-str">' + esc(line.slice(i, j + 1)) + '</span>'; i = j + 1; continue;
+    }
+    if (/[A-Za-z_]/.test(ch)) {
+      let j = i; while (j < line.length && /[A-Za-z0-9_]/.test(line[j])) j++;
+      const word = line.slice(i, j);
+      const cls = KW.has(word) ? 'tok-kw' : BI.has(word) ? 'tok-bi' : (line[j] === '(' ? 'tok-fn' : null);
+      out += cls ? '<span class="' + cls + '">' + esc(word) + '</span>' : esc(word);
+      i = j; continue;
+    }
+    if (/[0-9]/.test(ch)) {
+      let j = i; while (j < line.length && /[0-9.]/.test(line[j])) j++;
+      out += '<span class="tok-num">' + esc(line.slice(i, j)) + '</span>'; i = j; continue;
+    }
+    out += esc(ch); i++;
+  }
+  return out;
+}
+
+/* ---------- състояние ---------- */
+let current = PROGRAMS[0], idx = 0, timer = null;
+
+const $ = (id) => document.getElementById(id);
+
+/* ---------- меню ---------- */
+function buildMenu() {
+  const groups = [];
+  for (const p of PROGRAMS) {
+    let g = groups.find((x) => x.lesson === p.lesson);
+    if (!g) { g = { lesson: p.lesson, md: p.lessonMd, items: [] }; groups.push(g); }
+    g.items.push(p);
+  }
+  $('menu').innerHTML = groups.map((g, gi) => `
+    <div>
+      <div class="flex items-baseline justify-between gap-2 mb-1">
+        <span class="text-[11px] uppercase tracking-wide text-slate-500">${gi + 1}. ${esc(g.lesson)}</span>
+        <a href="${g.md}" class="text-[11px] text-indigo-400 hover:underline">.md</a>
+      </div>
+      <div class="space-y-1">
+        ${g.items.map((p) => `<button data-id="${esc(p.id)}" class="prog-btn w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-slate-800 text-slate-300">${esc(p.title)}</button>`).join('')}
+      </div>
+    </div>`).join('');
+  document.querySelectorAll('.prog-btn').forEach((b) => {
+    b.onclick = () => load(PROGRAMS.find((p) => p.id === b.dataset.id));
+  });
+}
+
+function markMenu() {
+  document.querySelectorAll('.prog-btn').forEach((b) => {
+    const on = b.dataset.id === current.id;
+    b.className = 'prog-btn w-full text-left px-2.5 py-1.5 rounded-lg ' +
+      (on ? 'bg-indigo-600/20 text-indigo-200 border border-indigo-500/40' : 'hover:bg-slate-800 text-slate-300 border border-transparent');
+  });
+}
+
+/* ---------- зареждане на програма ---------- */
+function load(prog) {
+  stop();
+  current = prog; idx = 0;
+  $('prog-title').textContent = prog.title;
+  $('prog-lesson').textContent = prog.lesson;
+  $('prog-file').textContent = prog.file;
+  $('prog-desc').textContent = prog.description || '';
+  $('code').innerHTML = prog.code.map((line, i) => `
+    <div class="code-line rounded" id="L${i + 1}">
+      <span class="text-slate-600 select-none text-right pr-3 tabular-nums">${i + 1}</span>
+      <span class="whitespace-pre">${highlight(line) || ' '}</span>
+    </div>`).join('');
+  $('slider').max = prog.steps.length - 1;
+  markMenu();
+  render();
+}
+
+/* ---------- обяснение на стъпката ---------- */
+function describeLine(text) {
+  const t = text.trim();
+  if (!t || t.startsWith('#')) return 'коментар — Python го прескача';
+  if (t.startsWith('def ')) return 'дефинира функция — тялото ѝ още не се изпълнява';
+  if (t.startsWith('class ')) return 'дефинира клас';
+  if (t.startsWith('import ') || t.startsWith('from ')) return 'зарежда модул';
+  if (t.startsWith('for ')) return 'цикълът взема следващата стойност (ако няма — излиза)';
+  if (t.startsWith('while ')) return 'проверява условието на цикъла';
+  if (t.startsWith('if ') || t.startsWith('elif ')) return 'проверява условие';
+  if (t.startsWith('else')) return 'нито едно условие не е вярно — изпълнява else';
+  if (t.startsWith('return')) return 'връща резултат и излиза от функцията';
+  if (t.startsWith('break')) return 'излиза от цикъла';
+  if (t.startsWith('continue')) return 'прескача останалия код и връща на началото на цикъла';
+  if (t.startsWith('with open')) return 'отваря файл (сам ще го затвори накрая)';
+  if (t.startsWith('print')) return 'извежда на екрана';
+  if (/^[A-Za-z_][\w.\[\]'"]*\s*(\+|-|\*|\/)?=[^=]/.test(t)) return 'присвоява стойност на променлива';
+  if (/\.\w+\(/.test(t)) return 'извиква функция върху обект';
+  if (/\w\(/.test(t)) return 'извиква функция';
+  return 'изпълнява реда';
+}
+
+function varMap(step) {
+  const m = new Map();
+  step.stack.forEach((fr, i) => fr.vars.forEach((v) => m.set(i + ':' + v.name, v.value)));
+  return m;
+}
+
+function changes(prev, step) {
+  if (!prev) return [];
+  const before = varMap(prev), after = varMap(step), out = [];
+  for (const [key, value] of after) {
+    if (!before.has(key)) out.push({ name: key.split(':')[1], value, isNew: true });
+    else if (before.get(key) !== value) out.push({ name: key.split(':')[1], value, from: before.get(key) });
+  }
+  return out;
+}
+
+/* ---------- рисуване ---------- */
+function render() {
+  const steps = current.steps, step = steps[idx], prev = idx > 0 ? steps[idx - 1] : null;
+  $('slider').value = idx;
+  $('counter').textContent = `стъпка ${idx + 1} / ${steps.length}`;
+
+  // ред
+  document.querySelectorAll('.code-line').forEach((el) => {
+    el.className = 'code-line rounded';
+  });
+  if (step.line) {
+    const el = $('L' + step.line);
+    if (el) {
+      el.className = 'code-line rounded bg-indigo-500/20 ring-1 ring-indigo-400/40';
+      el.scrollIntoView({ block: 'nearest' });
+    }
+  }
+
+  // обяснение
+  const lineText = step.line ? current.code[step.line - 1] : '';
+  const diffs = changes(prev, step);
+  let html;
+  if (step.event === 'end') {
+    html = '<span class="text-emerald-400 font-medium">Програмата завърши.</span>' +
+      (current.error ? ' <span class="text-rose-400">' + esc(current.error) + '</span>' : '');
+  } else if (step.event === 'return') {
+    const fn = step.stack.length ? step.stack[step.stack.length - 1].func : 'функцията';
+    html = `<span class="text-amber-300">ред ${step.line}</span> — <b>${esc(fn)}</b> връща <code class="text-amber-200">${esc(step.returned)}</code> и управлението се връща на мястото на извикването`;
+  } else {
+    html = `<span class="text-indigo-300">ред ${step.line}</span> — ${describeLine(lineText)}` +
+      `<div class="text-slate-500 text-xs mt-0.5">предстои да се изпълни: <code>${esc(lineText.trim())}</code></div>`;
+  }
+  const newOut = prev ? step.stdout.slice(prev.stdout.length) : step.stdout;
+  if (diffs.length) {
+    html += '<div class="mt-1 text-xs">' + diffs.map((d) =>
+      `<span class="text-slate-400">${d.isNew ? 'нова променлива' : 'промяна'}</span> <code class="text-sky-300">${esc(d.name)}</code>` +
+      (d.from !== undefined ? ` <span class="text-slate-500">${esc(d.from)} →</span>` : ' =') +
+      ` <code class="text-sky-200">${esc(d.value)}</code>`).join('<br>') + '</div>';
+  }
+  if (newOut) html += `<div class="mt-1 text-xs text-emerald-400">на екрана се появи: <code>${esc(newOut.replace(/\n$/, ''))}</code></div>`;
+  $('explain').innerHTML = html;
+
+  // променливи (най-горният frame)
+  const top = step.stack.length ? step.stack[step.stack.length - 1] : null;
+  const changed = new Set(diffs.map((d) => d.name));
+  if (top && top.vars.length) {
+    $('vars').innerHTML = top.vars.map((v) => `
+      <div class="flex items-start gap-2 px-2 py-1 rounded ${changed.has(v.name) ? 'bg-amber-500/10 flash' : ''}">
+        <span class="text-sky-300">${esc(v.name)}</span>
+        <span class="text-slate-600">=</span>
+        <span class="text-slate-200 break-all flex-1">${esc(v.value)}</span>
+        <span class="text-[10px] text-slate-500 shrink-0 mt-0.5">${esc(v.type)}</span>
+      </div>`).join('');
+  } else {
+    $('vars').innerHTML = '<p class="text-slate-500 text-xs font-sans">още няма променливи</p>';
+  }
+
+  // стек
+  if (step.stack.length > 1) {
+    $('stack-box').classList.remove('hidden');
+    $('stack').innerHTML = step.stack.map((fr, i) => `
+      <div class="px-2 py-1 rounded ${i === step.stack.length - 1 ? 'bg-indigo-500/15 text-indigo-200' : 'text-slate-400'}">
+        ${'&nbsp;'.repeat(i * 2)}${esc(fr.func)} <span class="text-slate-600">(ред ${fr.line})</span>
+        ${fr.vars.length ? `<div class="text-[11px] text-slate-500 pl-${i ? 4 : 0}">${esc(fr.vars.map((v) => v.name + '=' + v.value).join(', '))}</div>` : ''}
+      </div>`).join('');
+  } else {
+    $('stack-box').classList.add('hidden');
+  }
+
+  // изход
+  $('stdout').innerHTML = prev && newOut
+    ? esc(prev.stdout) + '<span class="bg-emerald-500/20 rounded">' + esc(newOut) + '</span>'
+    : (esc(step.stdout) || '<span class="text-slate-500 font-sans text-xs">още нищо не е изведено</span>');
+
+  // файлове
+  const names = Object.keys(step.files || {});
+  if (names.length) {
+    $('files-box').classList.remove('hidden');
+    $('files').innerHTML = names.map((n) => `
+      <div class="border border-slate-800 rounded-lg overflow-hidden">
+        <div class="px-2 py-1 bg-slate-800/60 text-slate-300">${esc(n)}</div>
+        <pre class="px-2 py-1 whitespace-pre-wrap text-slate-400">${esc(step.files[n]) || '<i>празен</i>'}</pre>
+      </div>`).join('');
+  } else {
+    $('files-box').classList.add('hidden');
+  }
+}
+
+/* ---------- управление ---------- */
+function go(n) { idx = Math.max(0, Math.min(current.steps.length - 1, n)); render(); }
+function stop() { if (timer) { clearInterval(timer); timer = null; } $('btn-play').textContent = '▶ пусни'; }
+function play() {
+  if (timer) return stop();
+  if (idx >= current.steps.length - 1) idx = 0;
+  $('btn-play').textContent = '⏸ пауза';
+  const delay = 1100 - $('speed').value * 100;
+  timer = setInterval(() => {
+    if (idx >= current.steps.length - 1) return stop();
+    go(idx + 1);
+  }, delay);
+}
+
+$('btn-next').onclick = () => { stop(); go(idx + 1); };
+$('btn-prev').onclick = () => { stop(); go(idx - 1); };
+$('btn-reset').onclick = () => { stop(); go(0); };
+$('btn-end').onclick = () => { stop(); go(current.steps.length - 1); };
+$('btn-play').onclick = play;
+$('slider').oninput = (e) => { stop(); go(+e.target.value); };
+$('speed').oninput = () => { if (timer) { stop(); play(); } };
+
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT') return;
+  if (e.key === 'ArrowRight') { stop(); go(idx + 1); e.preventDefault(); }
+  if (e.key === 'ArrowLeft') { stop(); go(idx - 1); e.preventDefault(); }
+  if (e.key === ' ') { play(); e.preventDefault(); }
+  if (e.key === 'r' || e.key === 'R') { stop(); go(0); }
+});
+
+buildMenu();
+load(PROGRAMS[0]);
+</script>
+</body>
+</html>

@@ -49,3 +49,113 @@ fun(a=3, b=4, c=5)
 # b 4
 # c 5
 ```
+
+<!-- ПРИМЕРИ:НАЧАЛО (генерирано от tools/sync_examples.py - не редактирай ръчно) -->
+
+## Примерни програми
+
+Кодът е в [`examples/05-functions/`](./examples/05-functions/) — пусни го с `python3 examples/05-functions/<име>.py`.
+Виж го ред по ред, с променливите и изхода на всяка стъпка, във [визуализатора](./visualizer.html).
+
+### 1. Площ на правоъгълник
+*задължителни аргументи и стойност по подразбиране*
+
+```python
+# Площ на правоъгълник - задължителни аргументи и стойност по подразбиране
+def area(width, height):          # и двата аргумента са задължителни
+    return width * height
+
+
+def describe(name, unit="кв.м"):  # unit има стойност по подразбиране
+    return name + " " + unit
+
+
+a = area(4, 5)
+print("Площ:", a)
+
+b = area(height=2, width=10)      # с имена редът няма значение
+print("Площ:", b)
+
+print(describe("20"))             # unit не е подаден -> "кв.м"
+print(describe("20", "кв.км"))    # тук подаваме свой unit
+```
+
+Изход:
+```
+Площ: 20
+Площ: 20
+20 кв.м
+20 кв.км
+```
+
+### 2. Статистика с *args
+*неограничен брой позиционни аргументи*
+
+```python
+# Статистика с *args - неограничен брой позиционни аргументи
+def stats(*args):
+    if len(args) == 0:
+        return 0, 0, 0            # функция може да върне няколко стойности
+    total = 0
+    biggest = args[0]
+    for number in args:
+        total += number
+        if number > biggest:
+            biggest = number
+    return total, total / len(args), biggest
+
+
+s, avg, mx = stats(5, 6, 9, 1)    # разпакетваме трите върнати стойности
+print("сума:", s, "средно:", avg, "макс:", mx)
+
+print(stats(10))
+print(stats())
+```
+
+Изход:
+```
+сума: 21 средно: 5.25 макс: 9
+(10, 10.0, 10)
+(0, 0, 0)
+```
+
+### 3. Профил с **kwargs
+*и функция, която вика друга функция*
+
+```python
+# Профил с **kwargs - и функция, която вика друга функция
+def initials(full_name):
+    parts = full_name.split()
+    letters = ""
+    for part in parts:
+        letters += part[0]        # първата буква на всяка дума
+    return letters
+
+
+def profile(full_name, **kwargs):
+    print("Име:", full_name)
+    print("Инициали:", initials(full_name))   # извикваме другата функция
+    for key, value in kwargs.items():
+        print(" ", key, "=", value)
+    return len(kwargs)
+
+
+count = profile("Atanas Kozhuharov", city="Sofia", age=16, grade=9)
+print("Допълнителни полета:", count)
+
+profile("Ivan Ivanov")            # kwargs може да е празен
+```
+
+Изход:
+```
+Име: Atanas Kozhuharov
+Инициали: AK
+  city = Sofia
+  age = 16
+  grade = 9
+Допълнителни полета: 3
+Име: Ivan Ivanov
+Инициали: II
+```
+
+<!-- ПРИМЕРИ:КРАЙ -->
